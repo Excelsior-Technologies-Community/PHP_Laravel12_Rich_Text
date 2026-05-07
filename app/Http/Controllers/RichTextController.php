@@ -7,9 +7,11 @@ use App\Models\RichText;
 
 class RichTextController extends Controller
 {
-    public function create()
+    public function index()
     {
-        return view('richtext.create');
+        $contents = RichText::latest()->get();
+
+        return view('richtext.create', compact('contents'));
     }
 
     public function store(Request $request)
@@ -22,6 +24,37 @@ class RichTextController extends Controller
             'content' => $request->bio,
         ]);
 
-        return redirect()->back()->with('success', 'Content saved!');
+        return redirect()->back()->with('success', 'Content Saved Successfully!');
+    }
+
+    public function edit($id)
+    {
+        $content = RichText::findOrFail($id);
+
+        return view('richtext.edit', compact('content'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'bio' => 'required',
+        ]);
+
+        $content = RichText::findOrFail($id);
+
+        $content->update([
+            'content' => $request->bio,
+        ]);
+
+        return redirect('/richtext')
+            ->with('success', 'Content Updated Successfully!');
+    }
+
+    public function destroy($id)
+    {
+        RichText::findOrFail($id)->delete();
+
+        return redirect()->back()
+            ->with('success', 'Content Deleted Successfully!');
     }
 }
