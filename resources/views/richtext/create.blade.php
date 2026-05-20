@@ -4,440 +4,562 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>Premium Rich Text CMS</title>
+    <title>Simple Rich Text CMS</title>
 
     <!-- Trix CSS -->
-    <link rel="stylesheet"
-        href="https://cdn.jsdelivr.net/npm/trix@2.0.3/dist/trix.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/trix@2.0.3/dist/trix.css">
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
-        *{
-            margin:0;
-            padding:0;
-            box-sizing:border-box;
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
         }
 
-        body{
-            font-family: Arial, sans-serif;
-            background: linear-gradient(135deg,#0f172a,#1e293b);
-            min-height:100vh;
-            padding:40px;
-            color:white;
-            transition:0.3s;
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: #f5f7fb;
+            color: #1a202c;
+            padding: 30px;
         }
 
-        body.light{
-            background:#f4f4f4;
-            color:#111;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .container{
-            max-width:1200px;
-            margin:auto;
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
         }
 
-        .topbar{
-            display:flex;
-            justify-content:space-between;
-            align-items:center;
-            margin-bottom:30px;
+        .header h1 {
+            font-size: 2.2rem;
+            color: #2d3748;
+            margin-bottom: 8px;
         }
 
-        .title{
-            font-size:34px;
-            font-weight:bold;
+        .header p {
+            color: #718096;
         }
 
-        .toggle-btn{
-            padding:10px 18px;
-            border:none;
-            border-radius:8px;
-            background:#2563eb;
-            color:white;
-            cursor:pointer;
-            font-weight:bold;
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 40px;
         }
 
-        .stats{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-            gap:20px;
-            margin-bottom:30px;
+        .stat-card {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s;
         }
 
-        .card{
-            background:rgba(255,255,255,0.1);
-            padding:25px;
-            border-radius:16px;
-            backdrop-filter: blur(10px);
+        .stat-card:hover {
+            transform: translateY(-2px);
         }
 
-        body.light .card{
-            background:white;
-            box-shadow:0 5px 15px rgba(0,0,0,0.1);
+        .stat-card i {
+            font-size: 28px;
+            color: #4299e1;
+            margin-bottom: 10px;
         }
 
-        .card h3{
-            margin-bottom:10px;
-            font-size:18px;
+        .stat-card .number {
+            font-size: 32px;
+            font-weight: bold;
+            color: #2d3748;
         }
 
-        .card p{
-            font-size:28px;
-            font-weight:bold;
+        .stat-card .label {
+            color: #718096;
+            font-size: 14px;
+            margin-top: 5px;
         }
 
-        .editor-box{
-            background:rgba(255,255,255,0.1);
-            padding:30px;
-            border-radius:16px;
-            margin-bottom:30px;
+        /* Editor Card */
+        .editor-card {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 40px;
         }
 
-        body.light .editor-box{
-            background:white;
+        .editor-header {
+            background: #f7fafc;
+            padding: 20px 25px;
+            border-bottom: 1px solid #e2e8f0;
         }
 
-        trix-editor{
-            background:white;
-            min-height:250px;
-            border-radius:10px;
-            padding:15px;
-            color:black;
+        .editor-header h2 {
+            font-size: 1.3rem;
+            color: #2d3748;
         }
 
-        .btn{
-            margin-top:20px;
-            padding:12px 25px;
-            border:none;
-            border-radius:10px;
-            background:#2563eb;
-            color:white;
-            cursor:pointer;
-            font-size:16px;
-            font-weight:bold;
+        .editor-body {
+            padding: 25px;
         }
 
-        .btn:hover{
-            background:#1d4ed8;
+        .form-group {
+            margin-bottom: 20px;
         }
 
-        .success{
-            background:#16a34a;
-            padding:14px;
-            border-radius:10px;
-            margin-bottom:20px;
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #4a5568;
         }
 
-        .search{
-            width:100%;
-            padding:14px;
-            border:none;
-            border-radius:10px;
-            margin-bottom:25px;
-            font-size:16px;
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s;
         }
 
-        .content-grid{
-            display:grid;
-            grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
-            gap:25px;
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #4299e1;
+            box-shadow: 0 0 0 3px rgba(66,153,225,0.1);
         }
 
-        .content-card{
-            background:rgba(255,255,255,0.1);
-            padding:20px;
-            border-radius:16px;
-            backdrop-filter: blur(10px);
-            transition:0.3s;
-            overflow:hidden;
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
         }
 
-        .content-card:hover{
-            transform:translateY(-5px);
+        trix-editor {
+            min-height: 250px;
+            background: white;
+            border-radius: 8px;
         }
 
-        body.light .content-card{
-            background:white;
-            box-shadow:0 5px 15px rgba(0,0,0,0.1);
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
 
-        .content{
-            max-height:200px;
-            overflow:auto;
-            margin-bottom:20px;
+        .checkbox-group input {
+            width: auto;
         }
 
-        .actions{
-            display:flex;
-            gap:10px;
+        .btn-submit {
+            background: #4299e1;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
         }
 
-        .edit-btn{
-            text-decoration:none;
-            background:#f59e0b;
-            color:white;
-            padding:10px 16px;
-            border-radius:8px;
-            font-weight:bold;
+        .btn-submit:hover {
+            background: #3182ce;
         }
 
-        .delete-btn{
-            background:#dc2626;
-            color:white;
-            border:none;
-            padding:10px 16px;
-            border-radius:8px;
-            cursor:pointer;
-            font-weight:bold;
+        /* Filters */
+        .filters-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+            justify-content: space-between;
         }
 
-        .empty{
-            text-align:center;
-            padding:40px;
-            opacity:0.7;
+        .filters-left {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
         }
 
-        @media(max-width:768px){
+        .filter-input {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 14px;
+        }
 
-            body{
-                padding:20px;
+        .filter-select {
+            padding: 8px 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: white;
+        }
+
+        /* Content Grid */
+        .content-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+        }
+
+        .content-card {
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            transition: all 0.2s;
+        }
+
+        .content-card:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .featured-image {
+            height: 180px;
+            background-size: cover;
+            background-position: center;
+            background-color: #edf2f7;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 12px;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2d3748;
+            text-decoration: none;
+        }
+
+        .card-title:hover {
+            color: #4299e1;
+        }
+
+        .category-badge {
+            background: #ebf8ff;
+            color: #3182ce;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 11px;
+            font-weight: 500;
+        }
+
+        .status-published {
+            background: #c6f6d5;
+            color: #276749;
+        }
+
+        .status-draft {
+            background: #fed7d7;
+            color: #9b2c2c;
+        }
+
+        .excerpt {
+            color: #718096;
+            font-size: 14px;
+            line-height: 1.5;
+            margin: 12px 0;
+        }
+
+        .meta-info {
+            display: flex;
+            gap: 15px;
+            font-size: 12px;
+            color: #a0aec0;
+            margin-bottom: 15px;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            border-top: 1px solid #edf2f7;
+            padding-top: 15px;
+        }
+
+        .btn-icon {
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: all 0.2s;
+        }
+
+        .btn-edit {
+            background: #edf2f7;
+            color: #4a5568;
+        }
+
+        .btn-edit:hover {
+            background: #e2e8f0;
+        }
+
+        .btn-toggle {
+            background: #e9d8fd;
+            color: #6b46c1;
+        }
+
+        .btn-delete {
+            background: #fed7d7;
+            color: #c53030;
+            border: none;
+            cursor: pointer;
+        }
+
+        .pagination {
+            margin-top: 40px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .pagination nav {
+            display: flex;
+            gap: 8px;
+        }
+
+        .alert {
+            background: #c6f6d5;
+            color: #276749;
+            padding: 15px 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
             }
-
-            .topbar{
-                flex-direction:column;
-                gap:20px;
+            
+            .form-row {
+                grid-template-columns: 1fr;
             }
-
-            .title{
-                text-align:center;
-                font-size:28px;
+            
+            .filters-card {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filters-left {
+                flex-direction: column;
             }
         }
     </style>
 </head>
 
-<body id="body">
-
+<body>
 <div class="container">
-
-    <div class="topbar">
-
-        <div class="title">
-            Premium Rich Text CMS
-        </div>
-
-        <button class="toggle-btn" onclick="toggleMode()">
-            Toggle Mode
-        </button>
-
+    <!-- Header -->
+    <div class="header">
+        <h1>Rich Text CMS</h1>
+        <p>Create, manage, and organize your content beautifully</p>
     </div>
 
     @if(session('success'))
-
-        <div class="success">
+        <div class="alert">
             {{ session('success') }}
         </div>
-
     @endif
 
-    <!-- Statistics -->
-
-    <div class="stats">
-
-        <div class="card">
-            <h3>Total Articles</h3>
-            <p>{{ $contents->count() }}</p>
+    <!-- Stats -->
+    <div class="stats-grid">
+        <div class="stat-card">
+          
+            <div class="number">{{ $totalArticles }}</div>
+            <div class="label">Total Articles</div>
         </div>
-
-        <div class="card">
-            <h3>Today's Posts</h3>
-            <p>
-                {{ $contents->where('created_at', '>=', now()->startOfDay())->count() }}
-            </p>
+        <div class="stat-card">
+          
+            <div class="number">{{ $todayPosts }}</div>
+            <div class="label">Today's Posts</div>
         </div>
-
-        <div class="card">
-            <h3>Last Updated</h3>
-
-            <p style="font-size:16px">
-
-                @if($contents->count())
-
-                    {{ $contents->first()->updated_at->diffForHumans() }}
-
-                @else
-
-                    No Data
-
-                @endif
-
-            </p>
+        <div class="stat-card">
+           
+            <div class="number">{{ $publishedPosts }}</div>
+            <div class="label">Published</div>
         </div>
-
     </div>
 
     <!-- Editor -->
+    <div class="editor-card">
+        <div class="editor-header">
+            <h2> Create New Content</h2>
+        </div>
+        <div class="editor-body">
+            <form method="POST" action="{{ route('richtext.store') }}">
+                @csrf
+                
+                <div class="form-row">
+                    <div class="form-group">
+                        <label> Title *</label>
+                        <input type="text" name="title" placeholder="Enter title..." required>
+                    </div>
+                    <div class="form-group">
+                        <label> Category *</label>
+                        <select name="category" required>
+                            <option value="General">General</option>
+                            <option value="Technology">Technology</option>
+                            <option value="Lifestyle">Lifestyle</option>
+                            <option value="Business">Business</option>
+                            <option value="Health">Health</option>
+                        </select>
+                    </div>
+                </div>
 
-    <div class="editor-box">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label> Tags (comma separated)</label>
+                        <input type="text" name="tags" placeholder="e.g., laravel, php, webdev">
+                    </div>
+                    <div class="form-group">
+                        <label>Featured Image URL</label>
+                        <input type="url" name="featured_image" placeholder="https://...">
+                    </div>
+                </div>
 
-        <h2 style="margin-bottom:20px;">
-            Create New Content
-        </h2>
+                <div class="form-group">
+                    <label>Content *</label>
+                    <input id="bio" type="hidden" name="bio">
+                    <trix-editor input="bio"></trix-editor>
+                    @error('bio')
+                        <p style="color: #e53e3e; font-size: 13px; margin-top: 8px;">{{ $message }}</p>
+                    @enderror
+                </div>
 
-        <form method="POST"
-            action="{{ route('richtext.store') }}">
+                <div class="form-group">
+                    <label class="checkbox-group">
+                        <input type="checkbox" name="is_published" checked>
+                        <span>Publish immediately</span>
+                    </label>
+                </div>
 
-            @csrf
-
-            <input id="bio"
-                type="hidden"
-                name="bio">
-
-            <trix-editor input="bio"></trix-editor>
-
-            @error('bio')
-
-                <p style="color:red; margin-top:10px;">
-                    {{ $message }}
-                </p>
-
-            @enderror
-
-            <button type="submit" class="btn">
-                Save Content
-            </button>
-
-        </form>
-
+                <button type="submit" class="btn-submit">
+                     Save Content
+                </button>
+            </form>
+        </div>
     </div>
 
-    <!-- Search -->
-
-    <input type="text"
-        id="search"
-        class="search"
-        placeholder="Search saved content...">
+    <!-- Filters -->
+    <div class="filters-card">
+        <div class="filters-left">
+            <form method="GET" action="{{ route('richtext.index') }}" style="display: flex; gap: 10px; flex-wrap: wrap;">
+                <input type="text" name="search" class="filter-input" placeholder="Search..." value="{{ request('search') }}">
+                <select name="category" class="filter-select" onchange="this.form.submit()">
+                    <option value="all" {{ request('category') == 'all' ? 'selected' : '' }}>All Categories</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat }}" {{ request('category') == $cat ? 'selected' : '' }}>{{ $cat }}</option>
+                    @endforeach
+                </select>
+                <select name="status" class="filter-select" onchange="this.form.submit()">
+                    <option value="all" {{ request('status') == 'all' ? 'selected' : '' }}>All Status</option>
+                    <option value="published" {{ request('status') == 'published' ? 'selected' : '' }}>Published</option>
+                    <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
+                </select>
+                <select name="sort" class="filter-select" onchange="this.form.submit()">
+                    <option value="latest" {{ request('sort') == 'latest' ? 'selected' : '' }}>Latest</option>
+                    <option value="oldest" {{ request('sort') == 'oldest' ? 'selected' : '' }}>Oldest</option>
+                    <option value="az" {{ request('sort') == 'az' ? 'selected' : '' }}>A - Z</option>
+                    <option value="za" {{ request('sort') == 'za' ? 'selected' : '' }}>Z - A</option>
+                </select>
+            </form>
+        </div>
+        <div>
+            <span style="font-size: 14px; color: #718096;">
+                {{ $contents->total() }} items
+            </span>
+        </div>
+    </div>
 
     <!-- Content Grid -->
-
-    <div class="content-grid" id="contentGrid">
-
+    <div class="content-grid">
         @forelse($contents as $item)
-
             <div class="content-card">
-
-                <div class="content">
-
-                    {!! $item->content !!}
-
+                @if($item->featured_image)
+                    <div class="featured-image" style="background-image: url('{{ $item->featured_image }}')"></div>
+                @endif
+                <div class="card-content">
+                    <div class="card-header">
+                        <span class="category-badge">{{ $item->category }}</span>
+                        <span class="status-badge {{ $item->is_published ? 'status-published' : 'status-draft' }}">
+                            {{ $item->is_published ? 'Published' : 'Draft' }}
+                        </span>
+                    </div>
+                    <a href="#" class="card-title">{{ $item->title ?? 'Untitled' }}</a>
+                    <div class="excerpt">{!! $item->excerpt !!}</div>
+                    <div class="meta-info">
+                        <span> {{ $item->created_at->format('M d, Y') }}</span>
+                        <span>{{ $item->tags ?: 'No tags' }}</span>
+                    </div>
+                    <div class="card-actions">
+                        <a href="{{ route('richtext.edit', $item->id) }}" class="btn-icon btn-edit">
+                            Edit
+                        </a>
+                        <form method="POST" action="{{ route('richtext.toggle', $item->id) }}" style="display: inline;">
+                            @csrf
+                            <button type="submit" class="btn-icon btn-toggle">
+                               
+                                {{ $item->is_published ? 'Unpublish' : 'Publish' }}
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ route('richtext.delete', $item->id) }}" style="display: inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="btn-icon btn-delete" onclick="return confirm('Delete this content?')">
+                               Delete
+                            </button>
+                        </form>
+                    </div>
                 </div>
-
-                <div class="actions">
-
-                    <a href="{{ route('richtext.edit', $item->id) }}"
-                        class="edit-btn">
-
-                        Edit
-
-                    </a>
-
-                    <form method="POST"
-                        action="{{ route('richtext.delete', $item->id) }}">
-
-                        @csrf
-                        @method('DELETE')
-
-                        <button type="submit"
-                            class="delete-btn"
-                            onclick="return confirm('Delete this content?')">
-
-                            Delete
-
-                        </button>
-
-                    </form>
-
-                </div>
-
             </div>
-
         @empty
-
-            <div class="empty">
-                No Content Found
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #718096;">
+               
+                <p>No content found. Create your first article above!</p>
             </div>
-
         @endforelse
-
     </div>
 
+    <!-- Pagination -->
+    <div class="pagination">
+        {{ $contents->appends(request()->query())->links() }}
+    </div>
 </div>
 
-<!-- Trix JS -->
-
 <script src="https://cdn.jsdelivr.net/npm/trix@2.0.3/dist/trix.umd.min.js"></script>
-
-<script>
-
-    // =========================
-    // LIVE SEARCH
-    // =========================
-
-    document.getElementById('search')
-    .addEventListener('keyup', function () {
-
-        let value = this.value.toLowerCase();
-
-        let cards = document.querySelectorAll('.content-card');
-
-        cards.forEach(card => {
-
-            card.style.display =
-                card.innerText.toLowerCase().includes(value)
-                ? 'block'
-                : 'none';
-
-        });
-
-    });
-
-    // =========================
-    // DARK MODE WITH STORAGE
-    // =========================
-
-    const body = document.getElementById('body');
-
-    // Load saved mode
-
-    if(localStorage.getItem('theme') === 'light'){
-
-        body.classList.add('light');
-
-    }
-
-    // Toggle Mode
-
-    function toggleMode(){
-
-        body.classList.toggle('light');
-
-        // Save theme
-
-        if(body.classList.contains('light')){
-
-            localStorage.setItem('theme', 'light');
-
-        }else{
-
-            localStorage.setItem('theme', 'dark');
-
-        }
-
-    }
-
-</script>
-
 </body>
 </html>
