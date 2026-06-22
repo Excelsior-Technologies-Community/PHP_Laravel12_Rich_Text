@@ -1,160 +1,30 @@
-<!DOCTYPE html>
-<html>
+@extends('layouts.app')
 
-<head>
-    <title>Edit Content</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/trix@2.0.3/dist/trix.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+@section('container_class', 'narrow')
 
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+@section('content')
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: #f5f7fb;
-            padding: 30px;
-        }
-
-        .container {
-            max-width: 900px;
-            margin: 0 auto;
-        }
-
-        .back-link {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            color: #4299e1;
-            text-decoration: none;
-            margin-bottom: 20px;
-        }
-
-        .back-link:hover {
-            color: #3182ce;
-        }
-
-        .editor-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .editor-header {
-            background: #f7fafc;
-            padding: 20px 25px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .editor-header h2 {
-            font-size: 1.3rem;
-            color: #2d3748;
-        }
-
-        .editor-body {
-            padding: 25px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #4a5568;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: #4299e1;
-            box-shadow: 0 0 0 3px rgba(66,153,225,0.1);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        trix-editor {
-            min-height: 300px;
-            background: white;
-            border-radius: 8px;
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .btn-update {
-            background: #4299e1;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-update:hover {
-            background: #3182ce;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 15px;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-        }
-    </style>
-</head>
-
-<body>
-<div class="container">
     <a href="{{ route('richtext.index') }}" class="back-link">
-         Back to Dashboard
+        <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
     </a>
 
     <div class="editor-card">
         <div class="editor-header">
-            <h2> Edit Content</h2>
+            <h2>Edit Content</h2>
         </div>
         <div class="editor-body">
-            <form method="POST" action="{{ route('richtext.update', $content->id) }}">
+            <form method="POST" action="{{ route('richtext.update', $content->id) }}" id="editForm">
                 @csrf
                 @method('PUT')
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label> Title</label>
-                        <input type="text" name="title" value="{{ old('title', $content->title) }}" required>
+                        <label>Title</label>
+                        <input type="text" name="title" id="titleInput" value="{{ old('title', $content->title) }}" required>
                     </div>
                     <div class="form-group">
-                        <label> Category</label>
-                        <select name="category" required>
+                        <label>Category</label>
+                        <select name="category" id="categoryInput" required>
                             <option value="General" {{ $content->category == 'General' ? 'selected' : '' }}>General</option>
                             <option value="Technology" {{ $content->category == 'Technology' ? 'selected' : '' }}>Technology</option>
                             <option value="Lifestyle" {{ $content->category == 'Lifestyle' ? 'selected' : '' }}>Lifestyle</option>
@@ -166,20 +36,52 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label> Tags</label>
-                        <input type="text" name="tags" value="{{ old('tags', $content->tags) }}" placeholder="comma separated">
+                        <label>Tags</label>
+                        <input type="text" name="tags" id="tagsInput" value="{{ old('tags', $content->tags) }}" placeholder="comma separated">
                     </div>
                     <div class="form-group">
-                        <label> Featured Image URL</label>
-                        <input type="url" name="featured_image" value="{{ old('featured_image', $content->featured_image) }}" placeholder="https://...">
+                        <label>Featured Image URL</label>
+                        <input type="url" name="featured_image" id="imageInput" value="{{ old('featured_image', $content->featured_image) }}" placeholder="https://...">
                     </div>
                 </div>
 
                 <div class="form-group">
-                    <label> Content</label>
+                    <label>Content</label>
+
+                    <div class="template-bar">
+                        <span class="template-label">Quick Templates:</span>
+                        <button type="button" class="btn-template" onclick="loadTemplate('blog')">
+                            <i class="fa-solid fa-blog"></i> Blog Post
+                        </button>
+                        <button type="button" class="btn-template" onclick="loadTemplate('report')">
+                            <i class="fa-solid fa-file-lines"></i> Report
+                        </button>
+                        <button type="button" class="btn-template" onclick="loadTemplate('newsletter')">
+                            <i class="fa-solid fa-envelope-open-text"></i> Newsletter
+                        </button>
+                    </div>
+
                     <input id="bio" type="hidden" name="bio" value="{{ $content->content }}">
-                    <trix-editor input="bio"></trix-editor>
+                    <trix-editor input="bio" id="bio_editor"></trix-editor>
+                    <div class="word-count" id="wordCount">0 words · 0 characters</div>
                 </div>
+
+                @if($content->versions->count())
+                    <div class="form-group">
+                        <button type="button" class="btn-icon btn-versions" onclick="toggleVersions({{ $content->id }})">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            {{ $content->versions->count() }} previous version{{ $content->versions->count() > 1 ? 's' : '' }}
+                        </button>
+                        <div class="versions-list" id="versions-{{ $content->id }}" style="display:none;">
+                            @foreach($content->versions as $v)
+                                <div class="version-row">
+                                    <span>v{{ $v->version }} · {{ $v->title }}</span>
+                                    <span class="version-date">{{ $v->updated_at->format('M d, Y H:i') }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    </div>
+                @endif
 
                 <div class="form-group">
                     <label class="checkbox-group">
@@ -188,14 +90,84 @@
                     </label>
                 </div>
 
-                <button type="submit" class="btn-update">
-                    Update Content
-                </button>
+                <div class="form-footer">
+                    <button type="submit" class="btn-update">
+                        Update Content
+                    </button>
+                    <span class="autosave-status" id="autoSaveStatus">Not saved yet</span>
+                </div>
             </form>
         </div>
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/trix@2.0.3/dist/trix.umd.min.js"></script>
-</body>
-</html>
+@endsection
+
+@push('scripts')
+<script>
+    const editorEl = document.querySelector('#bio_editor');
+    const wordCountEl = document.querySelector('#wordCount');
+    const autoSaveStatus = document.querySelector('#autoSaveStatus');
+    let autoSaveTimer;
+    const recordId = '{{ $content->id }}';
+
+    function updateWordCount() {
+        const text = editorEl.innerText.trim();
+        const words = text.length ? text.split(/\s+/).length : 0;
+        wordCountEl.textContent = words + ' words · ' + text.length + ' characters';
+    }
+
+    function loadTemplate(type) {
+        fetch(`{{ route('richtext.template') }}?type=${type}`)
+            .then(res => res.json())
+            .then(data => {
+                editorEl.editor.loadHTML(data.content);
+                updateWordCount();
+                triggerAutoSave();
+            });
+    }
+
+    function triggerAutoSave() {
+        clearTimeout(autoSaveTimer);
+        autoSaveStatus.textContent = 'Typing...';
+        autoSaveTimer = setTimeout(saveDraftNow, 2000);
+    }
+
+    function saveDraftNow() {
+        const formData = new FormData();
+        formData.append('title', document.querySelector('#titleInput').value);
+        formData.append('bio', document.querySelector('#bio').value);
+        formData.append('category', document.querySelector('#categoryInput').value);
+        formData.append('tags', document.querySelector('#tagsInput').value);
+        formData.append('record_id', recordId);
+
+        fetch(`{{ route('richtext.draft') }}`, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            autoSaveStatus.textContent = 'Draft saved at ' + data.time;
+        })
+        .catch(() => {
+            autoSaveStatus.textContent = 'Auto-save failed';
+        });
+    }
+
+    function toggleVersions(id) {
+        const el = document.getElementById('versions-' + id);
+        el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+    }
+
+    editorEl.addEventListener('trix-initialize', updateWordCount);
+
+    editorEl.addEventListener('trix-change', function () {
+        updateWordCount();
+        triggerAutoSave();
+    });
+
+    document.querySelector('#titleInput').addEventListener('input', triggerAutoSave);
+    document.querySelector('#categoryInput').addEventListener('change', triggerAutoSave);
+    document.querySelector('#tagsInput').addEventListener('input', triggerAutoSave);
+</script>
+@endpush

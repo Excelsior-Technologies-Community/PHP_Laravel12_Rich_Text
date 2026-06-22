@@ -13,3 +13,5 @@ Route::get('/richtext/edit/{id}', [RichTextController::class, 'edit'])->name('ri
 Route::put('/richtext/update/{id}', [RichTextController::class, 'update'])->name('richtext.update');
 Route::delete('/richtext/delete/{id}', [RichTextController::class, 'destroy'])->name('richtext.delete');
 Route::post('/richtext/toggle/{id}', [RichTextController::class, 'toggleStatus'])->name('richtext.toggle');
+Route::get('/richtext/template', [RichTextController::class, 'loadTemplate'])->name('richtext.template');
+Route::post('/richtext/draft', [RichTextController::class, 'saveDraft'])->name('richtext.draft');
