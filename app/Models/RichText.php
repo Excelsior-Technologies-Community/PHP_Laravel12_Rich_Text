@@ -12,7 +12,9 @@ class RichText extends Model
         'category',
         'tags',
         'featured_image',
-        'is_published'
+        'is_published',
+        'version',
+        'original_id'
     ];
 
     protected $casts = [
@@ -21,7 +23,6 @@ class RichText extends Model
         'updated_at' => 'datetime'
     ];
 
-    // Get excerpt (first 150 characters)
     public function getExcerptAttribute()
     {
         $cleanContent = strip_tags($this->content);
@@ -30,15 +31,19 @@ class RichText extends Model
             : $cleanContent;
     }
 
-    // Get word count
     public function getWordCountAttribute()
     {
         return str_word_count(strip_tags($this->content));
     }
 
-    // Scope for published posts
     public function scopePublished($query)
     {
         return $query->where('is_published', true);
+    }
+
+
+    public function versions()
+    {
+        return $this->hasMany(RichText::class, 'original_id', 'id')->orderBy('version', 'desc');
     }
 }

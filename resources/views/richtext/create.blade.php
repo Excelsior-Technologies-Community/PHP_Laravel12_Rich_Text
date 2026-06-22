@@ -1,389 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+@extends('layouts.app')
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Rich Text CMS</title>
+@section('content')
 
-    <!-- Trix CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/trix@2.0.3/dist/trix.css">
-    
-    <!-- Font Awesome -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f5f7fb;
-            color: #1a202c;
-            padding: 30px;
-        }
-
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-        }
-
-        /* Header */
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .header h1 {
-            font-size: 2.2rem;
-            color: #2d3748;
-            margin-bottom: 8px;
-        }
-
-        .header p {
-            color: #718096;
-        }
-
-        /* Stats Grid */
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            margin-bottom: 40px;
-        }
-
-        .stat-card {
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            text-align: center;
-            transition: transform 0.2s;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-2px);
-        }
-
-        .stat-card i {
-            font-size: 28px;
-            color: #4299e1;
-            margin-bottom: 10px;
-        }
-
-        .stat-card .number {
-            font-size: 32px;
-            font-weight: bold;
-            color: #2d3748;
-        }
-
-        .stat-card .label {
-            color: #718096;
-            font-size: 14px;
-            margin-top: 5px;
-        }
-
-        /* Editor Card */
-        .editor-card {
-            background: white;
-            border-radius: 16px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            overflow: hidden;
-            margin-bottom: 40px;
-        }
-
-        .editor-header {
-            background: #f7fafc;
-            padding: 20px 25px;
-            border-bottom: 1px solid #e2e8f0;
-        }
-
-        .editor-header h2 {
-            font-size: 1.3rem;
-            color: #2d3748;
-        }
-
-        .editor-body {
-            padding: 25px;
-        }
-
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #4a5568;
-        }
-
-        .form-group input,
-        .form-group select,
-        .form-group textarea {
-            width: 100%;
-            padding: 10px 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.2s;
-        }
-
-        .form-group input:focus,
-        .form-group select:focus,
-        .form-group textarea:focus {
-            outline: none;
-            border-color: #4299e1;
-            box-shadow: 0 0 0 3px rgba(66,153,225,0.1);
-        }
-
-        .form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        trix-editor {
-            min-height: 250px;
-            background: white;
-            border-radius: 8px;
-        }
-
-        .checkbox-group {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .checkbox-group input {
-            width: auto;
-        }
-
-        .btn-submit {
-            background: #4299e1;
-            color: white;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            font-size: 15px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-
-        .btn-submit:hover {
-            background: #3182ce;
-        }
-
-        /* Filters */
-        .filters-card {
-            background: white;
-            border-radius: 16px;
-            padding: 20px;
-            margin-bottom: 30px;
-            display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .filters-left {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .filter-input {
-            padding: 8px 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 14px;
-        }
-
-        .filter-select {
-            padding: 8px 12px;
-            border: 1px solid #e2e8f0;
-            border-radius: 8px;
-            background: white;
-        }
-
-        /* Content Grid */
-        .content-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
-        }
-
-        .content-card {
-            background: white;
-            border-radius: 16px;
-            overflow: hidden;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-            transition: all 0.2s;
-        }
-
-        .content-card:hover {
-            transform: translateY(-3px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        .featured-image {
-            height: 180px;
-            background-size: cover;
-            background-position: center;
-            background-color: #edf2f7;
-        }
-
-        .card-content {
-            padding: 20px;
-        }
-
-        .card-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-            margin-bottom: 12px;
-        }
-
-        .card-title {
-            font-size: 1.2rem;
-            font-weight: 600;
-            color: #2d3748;
-            text-decoration: none;
-        }
-
-        .card-title:hover {
-            color: #4299e1;
-        }
-
-        .category-badge {
-            background: #ebf8ff;
-            color: #3182ce;
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 500;
-        }
-
-        .status-badge {
-            padding: 4px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 500;
-        }
-
-        .status-published {
-            background: #c6f6d5;
-            color: #276749;
-        }
-
-        .status-draft {
-            background: #fed7d7;
-            color: #9b2c2c;
-        }
-
-        .excerpt {
-            color: #718096;
-            font-size: 14px;
-            line-height: 1.5;
-            margin: 12px 0;
-        }
-
-        .meta-info {
-            display: flex;
-            gap: 15px;
-            font-size: 12px;
-            color: #a0aec0;
-            margin-bottom: 15px;
-        }
-
-        .card-actions {
-            display: flex;
-            gap: 10px;
-            border-top: 1px solid #edf2f7;
-            padding-top: 15px;
-        }
-
-        .btn-icon {
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-size: 13px;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            transition: all 0.2s;
-        }
-
-        .btn-edit {
-            background: #edf2f7;
-            color: #4a5568;
-        }
-
-        .btn-edit:hover {
-            background: #e2e8f0;
-        }
-
-        .btn-toggle {
-            background: #e9d8fd;
-            color: #6b46c1;
-        }
-
-        .btn-delete {
-            background: #fed7d7;
-            color: #c53030;
-            border: none;
-            cursor: pointer;
-        }
-
-        .pagination {
-            margin-top: 40px;
-            display: flex;
-            justify-content: center;
-        }
-
-        .pagination nav {
-            display: flex;
-            gap: 8px;
-        }
-
-        .alert {
-            background: #c6f6d5;
-            color: #276749;
-            padding: 15px 20px;
-            border-radius: 12px;
-            margin-bottom: 25px;
-        }
-
-        @media (max-width: 768px) {
-            body {
-                padding: 15px;
-            }
-            
-            .form-row {
-                grid-template-columns: 1fr;
-            }
-            
-            .filters-card {
-                flex-direction: column;
-                align-items: stretch;
-            }
-            
-            .filters-left {
-                flex-direction: column;
-            }
-        }
-    </style>
-</head>
-
-<body>
-<div class="container">
-    <!-- Header -->
     <div class="header">
         <h1>Rich Text CMS</h1>
         <p>Create, manage, and organize your content beautifully</p>
@@ -395,42 +13,40 @@
         </div>
     @endif
 
-    <!-- Stats -->
     <div class="stats-grid">
         <div class="stat-card">
-          
+            <i class="fa-solid fa-file-lines"></i>
             <div class="number">{{ $totalArticles }}</div>
             <div class="label">Total Articles</div>
         </div>
         <div class="stat-card">
-          
+            <i class="fa-solid fa-calendar-day"></i>
             <div class="number">{{ $todayPosts }}</div>
             <div class="label">Today's Posts</div>
         </div>
         <div class="stat-card">
-           
+            <i class="fa-solid fa-circle-check"></i>
             <div class="number">{{ $publishedPosts }}</div>
             <div class="label">Published</div>
         </div>
     </div>
 
-    <!-- Editor -->
     <div class="editor-card">
         <div class="editor-header">
-            <h2> Create New Content</h2>
+            <h2>Create New Content</h2>
         </div>
         <div class="editor-body">
-            <form method="POST" action="{{ route('richtext.store') }}">
+            <form method="POST" action="{{ route('richtext.store') }}" id="createForm">
                 @csrf
-                
+
                 <div class="form-row">
                     <div class="form-group">
-                        <label> Title *</label>
-                        <input type="text" name="title" placeholder="Enter title..." required>
+                        <label>Title *</label>
+                        <input type="text" name="title" id="titleInput" placeholder="Enter title..." required>
                     </div>
                     <div class="form-group">
-                        <label> Category *</label>
-                        <select name="category" required>
+                        <label>Category *</label>
+                        <select name="category" id="categoryInput" required>
                             <option value="General">General</option>
                             <option value="Technology">Technology</option>
                             <option value="Lifestyle">Lifestyle</option>
@@ -442,21 +58,36 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label> Tags (comma separated)</label>
-                        <input type="text" name="tags" placeholder="e.g., laravel, php, webdev">
+                        <label>Tags (comma separated)</label>
+                        <input type="text" name="tags" id="tagsInput" placeholder="e.g., laravel, php, webdev">
                     </div>
                     <div class="form-group">
                         <label>Featured Image URL</label>
-                        <input type="url" name="featured_image" placeholder="https://...">
+                        <input type="url" name="featured_image" id="imageInput" placeholder="https://...">
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Content *</label>
+
+                    <div class="template-bar">
+                        <span class="template-label">Quick Templates:</span>
+                        <button type="button" class="btn-template" onclick="loadTemplate('blog')">
+                            <i class="fa-solid fa-blog"></i> Blog Post
+                        </button>
+                        <button type="button" class="btn-template" onclick="loadTemplate('report')">
+                            <i class="fa-solid fa-file-lines"></i> Report
+                        </button>
+                        <button type="button" class="btn-template" onclick="loadTemplate('newsletter')">
+                            <i class="fa-solid fa-envelope-open-text"></i> Newsletter
+                        </button>
+                    </div>
+
                     <input id="bio" type="hidden" name="bio">
-                    <trix-editor input="bio"></trix-editor>
+                    <trix-editor input="bio" id="bio_editor"></trix-editor>
+                    <div class="word-count" id="wordCount">0 words · 0 characters</div>
                     @error('bio')
-                        <p style="color: #e53e3e; font-size: 13px; margin-top: 8px;">{{ $message }}</p>
+                        <p class="field-error">{{ $message }}</p>
                     @enderror
                 </div>
 
@@ -467,14 +98,16 @@
                     </label>
                 </div>
 
-                <button type="submit" class="btn-submit">
-                     Save Content
-                </button>
+                <div class="form-footer">
+                    <button type="submit" class="btn-submit">
+                        Save Content
+                    </button>
+                    <span class="autosave-status" id="autoSaveStatus">Not saved yet</span>
+                </div>
             </form>
         </div>
     </div>
 
-    <!-- Filters -->
     <div class="filters-card">
         <div class="filters-left">
             <form method="GET" action="{{ route('richtext.index') }}" style="display: flex; gap: 10px; flex-wrap: wrap;">
@@ -499,13 +132,12 @@
             </form>
         </div>
         <div>
-            <span style="font-size: 14px; color: #718096;">
+            <span style="font-size: 14px; color: var(--text-secondary);">
                 {{ $contents->total() }} items
             </span>
         </div>
     </div>
 
-    <!-- Content Grid -->
     <div class="content-grid">
         @forelse($contents as $item)
             <div class="content-card">
@@ -514,7 +146,10 @@
                 @endif
                 <div class="card-content">
                     <div class="card-header">
-                        <span class="category-badge">{{ $item->category }}</span>
+                        <div class="badge-group">
+                            <span class="category-badge">{{ $item->category }}</span>
+                            <span class="version-tag">v{{ $item->version }}</span>
+                        </div>
                         <span class="status-badge {{ $item->is_published ? 'status-published' : 'status-draft' }}">
                             {{ $item->is_published ? 'Published' : 'Draft' }}
                         </span>
@@ -522,17 +157,34 @@
                     <a href="#" class="card-title">{{ $item->title ?? 'Untitled' }}</a>
                     <div class="excerpt">{!! $item->excerpt !!}</div>
                     <div class="meta-info">
-                        <span> {{ $item->created_at->format('M d, Y') }}</span>
+                        <span>{{ $item->created_at->format('M d, Y') }}</span>
+                        <span>{{ $item->word_count }} words</span>
                         <span>{{ $item->tags ?: 'No tags' }}</span>
                     </div>
+
+                    @if($item->versions->count())
+                        <button type="button" class="btn-icon btn-versions" onclick="toggleVersions({{ $item->id }})">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                            {{ $item->versions->count() }} previous version{{ $item->versions->count() > 1 ? 's' : '' }}
+                        </button>
+                        <div class="versions-list" id="versions-{{ $item->id }}" style="display:none;">
+                            @foreach($item->versions as $v)
+                                <div class="version-row">
+                                    <span>v{{ $v->version }} · {{ $v->title }}</span>
+                                    <span class="version-date">{{ $v->updated_at->format('M d, Y H:i') }}</span>
+                                </div>
+                            @endforeach
+                        </div>
+                    @endif
+
                     <div class="card-actions">
                         <a href="{{ route('richtext.edit', $item->id) }}" class="btn-icon btn-edit">
-                            Edit
+                            <i class="fa-solid fa-pen"></i> Edit
                         </a>
                         <form method="POST" action="{{ route('richtext.toggle', $item->id) }}" style="display: inline;">
                             @csrf
                             <button type="submit" class="btn-icon btn-toggle">
-                               
+                                <i class="fa-solid fa-toggle-on"></i>
                                 {{ $item->is_published ? 'Unpublish' : 'Publish' }}
                             </button>
                         </form>
@@ -540,26 +192,90 @@
                             @csrf
                             @method('DELETE')
                             <button type="submit" class="btn-icon btn-delete" onclick="return confirm('Delete this content?')">
-                               Delete
+                                <i class="fa-solid fa-trash"></i> Delete
                             </button>
                         </form>
                     </div>
                 </div>
             </div>
         @empty
-            <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: #718096;">
-               
+            <div style="grid-column: 1/-1; text-align: center; padding: 60px; color: var(--text-secondary);">
                 <p>No content found. Create your first article above!</p>
             </div>
         @endforelse
     </div>
 
-    <!-- Pagination -->
     <div class="pagination">
         {{ $contents->appends(request()->query())->links() }}
     </div>
-</div>
 
-<script src="https://cdn.jsdelivr.net/npm/trix@2.0.3/dist/trix.umd.min.js"></script>
-</body>
-</html>
+@endsection
+
+@push('scripts')
+<script>
+    const editorEl = document.querySelector('#bio_editor');
+    const wordCountEl = document.querySelector('#wordCount');
+    const autoSaveStatus = document.querySelector('#autoSaveStatus');
+    let autoSaveTimer;
+
+    function updateWordCount() {
+        const text = editorEl.innerText.trim();
+        const words = text.length ? text.split(/\s+/).length : 0;
+        wordCountEl.textContent = words + ' words · ' + text.length + ' characters';
+    }
+
+    function loadTemplate(type) {
+        fetch(`{{ route('richtext.template') }}?type=${type}`)
+            .then(res => res.json())
+            .then(data => {
+                editorEl.editor.loadHTML(data.content);
+                updateWordCount();
+                triggerAutoSave();
+            });
+    }
+
+    function triggerAutoSave() {
+        clearTimeout(autoSaveTimer);
+        autoSaveStatus.textContent = 'Typing...';
+        autoSaveTimer = setTimeout(saveDraftNow, 2000);
+    }
+
+    function saveDraftNow() {
+        const formData = new FormData();
+        formData.append('title', document.querySelector('#titleInput').value);
+        formData.append('bio', document.querySelector('#bio').value);
+        formData.append('category', document.querySelector('#categoryInput').value);
+        formData.append('tags', document.querySelector('#tagsInput').value);
+        formData.append('record_id', 'new');
+
+        fetch(`{{ route('richtext.draft') }}`, {
+            method: 'POST',
+            headers: { 'X-CSRF-TOKEN': document.querySelector('meta[name=csrf-token]').content },
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+            autoSaveStatus.textContent = 'Draft saved at ' + data.time;
+        })
+        .catch(() => {
+            autoSaveStatus.textContent = 'Auto-save failed';
+        });
+    }
+
+    function toggleVersions(id) {
+        const el = document.getElementById('versions-' + id);
+        el.style.display = el.style.display === 'none' ? 'flex' : 'none';
+    }
+
+    editorEl.addEventListener('trix-change', function () {
+        updateWordCount();
+        triggerAutoSave();
+    });
+
+    document.querySelector('#titleInput').addEventListener('input', triggerAutoSave);
+    document.querySelector('#categoryInput').addEventListener('change', triggerAutoSave);
+    document.querySelector('#tagsInput').addEventListener('input', triggerAutoSave);
+
+    document.addEventListener('DOMContentLoaded', updateWordCount);
+</script>
+@endpush
